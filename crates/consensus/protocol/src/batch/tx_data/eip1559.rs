@@ -1,6 +1,6 @@
 //! This module contains the eip1559 transaction data type for a span batch.
 
-use alloy_consensus::{SignableTransaction, Signed, TxEip1559};
+use alloy_consensus::{Signed, TxEip1559};
 use alloy_eips::eip2930::AccessList;
 use alloy_primitives::{Address, Signature, TxKind, U256};
 use alloy_rlp::{Bytes, RlpDecodable, RlpEncodable};
@@ -51,8 +51,7 @@ impl SpanBatchEip1559TransactionData {
             input: self.data.clone().into(),
             access_list: self.access_list.clone(),
         };
-        let signature_hash = eip1559_tx.signature_hash();
-        Ok(Signed::new_unchecked(eip1559_tx, signature, signature_hash))
+        Ok(Signed::new_unhashed(eip1559_tx, signature))
     }
 }
 

@@ -2,7 +2,7 @@
 
 use alloc::vec::Vec;
 
-use alloy_consensus::{SignableTransaction, Signed, TxEip7702};
+use alloy_consensus::{Signed, TxEip7702};
 use alloy_eips::{eip2930::AccessList, eip7702::SignedAuthorization};
 use alloy_primitives::{Address, Signature, U256};
 use alloy_rlp::{Bytes, RlpDecodable, RlpEncodable};
@@ -59,8 +59,7 @@ impl SpanBatchEip7702TransactionData {
             access_list: self.access_list.clone(),
             authorization_list: self.authorization_list.clone(),
         };
-        let signature_hash = eip7702_tx.signature_hash();
-        Ok(Signed::new_unchecked(eip7702_tx, signature, signature_hash))
+        Ok(Signed::new_unhashed(eip7702_tx, signature))
     }
 }
 
