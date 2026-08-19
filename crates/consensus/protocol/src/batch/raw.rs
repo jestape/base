@@ -67,20 +67,20 @@ impl RawSpanBatch {
         }
 
         // Get all transactions in the batch.
-        let enveloped_txs = self.payload.txs.full_txs(chain_id)?;
+        let mut enveloped_txs = self.payload.txs.full_txs(chain_id)?;
 
         let mut tx_idx = 0;
         let batches = (0..self.payload.block_count).fold(Vec::new(), |mut acc, i| {
             let transactions =
                 (0..self.payload.block_tx_counts[i as usize]).fold(Vec::new(), |mut acc, _| {
-                    acc.push(enveloped_txs[tx_idx].clone());
+                    acc.push(core::mem::take(&mut enveloped_txs[tx_idx]).into());
                     tx_idx += 1;
                     acc
                 });
             acc.push(SpanBatchElement {
                 epoch_num: block_origin_nums[i as usize],
                 timestamp: genesis_time + self.prefix.rel_timestamp + block_time * i,
-                transactions: transactions.into_iter().map(|v| v.into()).collect(),
+                transactions,
             });
             acc
         });
